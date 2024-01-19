@@ -4,7 +4,7 @@ import sys
 
 pygame.init()
 
-size = width, height = 800, 400
+size = width, height = 1541, 840
 screen = pygame.display.set_mode(size)
 tile_width = tile_height = 50
 FPS = 50
@@ -28,13 +28,13 @@ def load_image(name, color_key=None):
     return image
 
 
-class Platform(pygame.sprite.Sprite):
+class Surface(pygame.sprite.Sprite):
     ''' Класс поверхности (почвы внизу экрана, по которой передвигается лягушка)'''
     image = load_image("ground0.png", color_key=-1)
 
     def __init__(self):
         super().__init__(all_sprites)
-        self.image = Platform.image
+        self.image = Surface.image
         self.rect = self.image.get_rect()
         # вычисляем маску для эффективного сравнения
         self.mask = pygame.mask.from_surface(self.image)
@@ -72,6 +72,7 @@ class Balcony(pygame.sprite.Sprite):
 
 class Camera:
     ''' Камера'''
+    # не работает
     def __init__(self):
         self.dx = 0
         self.dy = 0
@@ -100,7 +101,7 @@ class Frog(pygame.sprite.Sprite):
 
     def update(self):
         # если еще в небе
-        if not pygame.sprite.collide_mask(self, platform):
+        if not pygame.sprite.collide_mask(self, all_balconys):
             self.rect = self.rect.move(0, 1)
 
     def move(self, x, y):
@@ -145,13 +146,14 @@ def start_screen():
         pygame.display.flip()
         clock.tick(FPS)
 
+
 # группа, содержащая все спрайты
 all_sprites = pygame.sprite.Group()
 all_balconys = pygame.sprite.Group()
 all_lianas = pygame.sprite.Group()
 personage = None
 
-platform = Platform()
+surface = Surface()
 
 clock = pygame.time.Clock()
 start_screen()
@@ -184,8 +186,7 @@ while running:
                     if event.key == pygame.K_UP:
                         personage.rect.y -= 25
 
-
-    screen.fill(pygame.Color("black"))
+    screen.blit(load_image('fon0.png'), (0, 0))
     all_sprites.draw(screen)
     all_sprites.update()
     pygame.display.flip()
