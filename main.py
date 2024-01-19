@@ -71,7 +71,7 @@ class Balcony(pygame.sprite.Sprite):
 
 
 class Camera:
-    ''' Камера'''
+    ''' Камера '''
     # не работает
     def __init__(self):
         self.dx = 0
