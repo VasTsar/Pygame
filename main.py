@@ -11,7 +11,7 @@ FPS = 50
 
 
 def load_image(name, color_key=None):
-    ''' Функция для загрузки спрайтов  '''
+    ''' Функция для загрузки спрайтов '''
     fullname = os.path.join('data', name)
     try:
         image = pygame.image.load(fullname).convert()
@@ -72,7 +72,7 @@ class Balcony(pygame.sprite.Sprite):
 
 class Camera:
     ''' Камера '''
-    # не работает
+    # починить
     def __init__(self):
         self.dx = 0
         self.dy = 0
@@ -100,7 +100,7 @@ class Frog(pygame.sprite.Sprite):
         self.rect.y = pos[1]
 
     def update(self):
-        # если еще в небе
+        ''' Если лягушка еще в небе '''
         if not pygame.sprite.collide_mask(self, all_balconys):
             self.rect = self.rect.move(0, 1)
 
@@ -112,6 +112,25 @@ class Frog(pygame.sprite.Sprite):
             camera.apply(sprite)
 
 
+'''class Enemy(pygame.sprite.Sprite):
+     # Класс врагов (принцев и принцесс)
+     # Надо разнести на два класса
+    image_f = load_image("princess0.png", color_key=-1)
+    image_m = load_image("prince0.png", color_key=-1)
+
+    def __init__(self, pos):
+        super().__init__(all_sprites)
+        self.image_f = Enemy.image_f
+        self.rect = self.image_f.get_rect()
+        self.image_m = Enemy.image_m
+        self.rect = self.image_m.get_rect()
+        # вычисляем маску для эффективного сравнения
+        self.mask_f = pygame.mask.from_surface(self.image_f)
+        self.mask_m = pygame.mask.from_surface(self.image_m)
+        self.rect.x = pos[0]
+        self.rect.y = pos[1]'''
+
+
 def terminate():
     ''' «Аварийное завершение»'''
     pygame.quit()
@@ -119,7 +138,7 @@ def terminate():
 
 
 def start_screen():
-    ''' Функция для стартового экрана (появляется пр запуске, исчезает при нажатии на клавишу клавиатуры или мыши)'''
+    ''' Функция для стартового экрана (появляется прu запуске, исчезает при нажатии на клавишу клавиатуры или мыши)'''
     intro_text = ["Стартовый экран", "",
                   "здесь будет текст"]
 
@@ -128,7 +147,7 @@ def start_screen():
     font = pygame.font.Font(None, 30)
     text_coord = 50
     for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('black'))
+        string_rendered = font.render(line, 1, pygame.Color('white'))
         intro_rect = string_rendered.get_rect()
         text_coord += 10
         intro_rect.top = text_coord
@@ -147,7 +166,6 @@ def start_screen():
         clock.tick(FPS)
 
 
-# группа, содержащая все спрайты
 all_sprites = pygame.sprite.Group()
 all_balconys = pygame.sprite.Group()
 all_lianas = pygame.sprite.Group()
@@ -183,7 +201,7 @@ while running:
                 elif event.key == pygame.K_RIGHT:
                     personage.rect.x += 20
                 if pygame.sprite.spritecollideany(personage, all_lianas):
-                    if event.key == pygame.K_UP:
+                    if event.key == pygame.K_SPACE:
                         personage.rect.y -= 25
 
     screen.blit(load_image('fon0.png'), (0, 0))
