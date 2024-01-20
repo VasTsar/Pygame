@@ -11,7 +11,7 @@ FPS = 50
 
 
 def load_image(name, color_key=None):
-    ''' Функция для загрузки спрайтов '''
+    """ Функция для загрузки спрайтов """
     fullname = os.path.join('data', name)
     try:
         image = pygame.image.load(fullname).convert()
@@ -29,11 +29,11 @@ def load_image(name, color_key=None):
 
 
 class Surface(pygame.sprite.Sprite):
-    ''' Класс поверхности (почвы внизу экрана, по которой передвигается лягушка)'''
+    """ Класс поверхности (почвы внизу экрана, по которой передвигается лягушка)"""
     image = load_image("ground0.png", color_key=-1)
 
     def __init__(self):
-        super().__init__(all_sprites)
+        super().__init__(all_sprites, all_balconys)
         self.image = Surface.image
         self.rect = self.image.get_rect()
         # вычисляем маску для эффективного сравнения
@@ -43,7 +43,7 @@ class Surface(pygame.sprite.Sprite):
         
         
 class Liana(pygame.sprite.Sprite):
-    ''' Класс лиан, по которым лягушка может залезать на балконы с врагами'''
+    """ Класс лиан, по которым лягушка может залезать на балконы с врагами"""
     image = load_image("liana0.png", color_key=-1)
 
     def __init__(self, pos):
@@ -57,7 +57,7 @@ class Liana(pygame.sprite.Sprite):
 
 
 class Balcony(pygame.sprite.Sprite):
-    ''' Класс балконов, по которым ходят враги (принцы и принцессы)'''
+    """ Класс балконов, по которым ходят враги (принцы и принцессы)"""
     image = load_image("balcony0.png", color_key=-1)
 
     def __init__(self, pos):
@@ -71,7 +71,7 @@ class Balcony(pygame.sprite.Sprite):
 
 
 class Camera:
-    ''' Камера '''
+    """ Камера """
     # починить
     def __init__(self):
         self.dx = 0
@@ -87,7 +87,7 @@ class Camera:
 
 
 class Frog(pygame.sprite.Sprite):
-    ''' Класс лягушки (главного героя, за которого Вы играете)'''
+    """ Класс лягушки (главного героя, за которого Вы играете)"""
     image = load_image("jaba.png", color_key=-1)
 
     def __init__(self, pos):
@@ -100,8 +100,8 @@ class Frog(pygame.sprite.Sprite):
         self.rect.y = pos[1]
 
     def update(self):
-        ''' Если лягушка еще в небе '''
-        if not pygame.sprite.collide_mask(self, all_balconys):
+        """ Если лягушка еще в небе """
+        if not pygame.sprite.spritecollideany(self, all_balconys):
             self.rect = self.rect.move(0, 1)
 
     def move(self, x, y):
@@ -132,13 +132,13 @@ class Frog(pygame.sprite.Sprite):
 
 
 def terminate():
-    ''' «Аварийное завершение»'''
+    """ «Аварийное завершение» """
     pygame.quit()
     sys.exit()
 
 
 def start_screen():
-    ''' Функция для стартового экрана (появляется прu запуске, исчезает при нажатии на клавишу клавиатуры или мыши)'''
+    """ Функция для стартового экрана (появляется прu запуске, исчезает при нажатии на клавишу клавиатуры или мыши)"""
     intro_text = ["Стартовый экран", "",
                   "здесь будет текст"]
 
@@ -201,7 +201,7 @@ while running:
                 elif event.key == pygame.K_RIGHT:
                     personage.rect.x += 20
                 if pygame.sprite.spritecollideany(personage, all_lianas):
-                    if event.key == pygame.K_SPACE:
+                    if event.key == pygame.K_UP:
                         personage.rect.y -= 25
 
     screen.blit(load_image('fon0.png'), (0, 0))
