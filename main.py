@@ -1,13 +1,13 @@
 import os
 import pygame
 import sys
+import argparse
 
-pygame.init()
 
-size = width, height = 1541, 840
-screen = pygame.display.set_mode(size)
-tile_width = tile_height = 50
-FPS = 50
+parser = argparse.ArgumentParser()
+parser.add_argument("map", type=str, nargs="?", default="map.map")
+args = parser.parse_args()
+map_file = args.map
 
 
 def load_image(name, color_key=None):
@@ -26,6 +26,14 @@ def load_image(name, color_key=None):
     else:
         image = image.convert_alpha()
     return image
+
+
+pygame.init()
+
+size = width, height = 1541, 840
+screen = pygame.display.set_mode(size)
+tile_width = tile_height = 50
+FPS = 50
 
 
 class Surface(pygame.sprite.Sprite):
@@ -201,7 +209,7 @@ while running:
                 elif event.key == pygame.K_RIGHT:
                     personage.rect.x += 20
                 if pygame.sprite.spritecollideany(personage, all_lianas):
-                    if event.key == pygame.K_UP:
+                    if event.key == pygame.K_SPACE:
                         personage.rect.y -= 25
 
     screen.blit(load_image('fon0.png'), (0, 0))
