@@ -34,6 +34,13 @@ size = width, height = 1541, 840
 screen = pygame.display.set_mode(size)
 tile_width = tile_height = 50
 FPS = 50
+tile_images = {
+    'wall': load_image('balcony0.png'),
+    'empty': load_image('crown01.png'),
+    'wall_boss': load_image('balcony10.png'),
+    'ground_boss': load_image('ground0.png')
+}
+player_image = load_image('crown02.png')
 
 
 class Surface(pygame.sprite.Sprite):
@@ -78,6 +85,15 @@ class Balcony(pygame.sprite.Sprite):
         self.rect.y = pos[1]
 
 
+class Tile(pygame.sprite.Sprite):
+    def __init__(self, tile_type, pos_x, pos_y):
+        super().__init__(all_sprites)
+        self.image = tile_images[tile_type]
+        self.rect = self.image.get_rect().move(
+            tile_width * pos_x, tile_height * pos_y)
+        self.abs_pos = (self.rect.x, self.rect.y)
+
+
 class Camera:
     """ Камера """
     # починить
@@ -120,7 +136,8 @@ class Frog(pygame.sprite.Sprite):
             camera.apply(sprite)
 
 
-'''class Enemy(pygame.sprite.Sprite):
+'''
+class Enemy(pygame.sprite.Sprite):
      # Класс врагов (принцев и принцесс)
      # Надо разнести на два класса
     image_f = load_image("princess0.png", color_key=-1)
@@ -136,7 +153,8 @@ class Frog(pygame.sprite.Sprite):
         self.mask_f = pygame.mask.from_surface(self.image_f)
         self.mask_m = pygame.mask.from_surface(self.image_m)
         self.rect.x = pos[0]
-        self.rect.y = pos[1]'''
+        self.rect.y = pos[1]
+'''
 
 
 def terminate():
@@ -185,6 +203,34 @@ clock = pygame.time.Clock()
 start_screen()
 camera = Camera()
 camera.update(personage)
+
+
+def load_level(filename):
+    filename = "data/" + filename
+    with open(filename, 'r') as mapFile:
+        level_map = [line.strip() for line in mapFile]
+    max_width = max(map(len, level_map))
+    return list(map(lambda x: list(x.ljust(max_width, '.')), level_map))
+
+
+def generate_level(level):
+    new_player, x, y = None, None, None
+    for y in range(len(level)):
+        for x in range(len(level[y])):
+            if level[y][x] == '.':
+                Tile('empty', x, y)
+            elif level[y][x] == '#':
+                Tile('wall', x, y)
+            elif level[y][x] == '%':
+                Tile('wall_boss', x, y)
+            elif level[y][x] == '*':
+                Tile('ground_boss', x, y)
+            elif level[y][x] == '@':
+                Tile('empty', x, y)
+                new_player = Frog(x, y)
+                level[y][x] = "."
+    return new_player, x, y
+
 
 running = True
 while running:
