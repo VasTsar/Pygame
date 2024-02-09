@@ -38,9 +38,11 @@ tile_images = {
     'wall': load_image('balcony0.png'),
     'empty': load_image('crown01.png'),
     'wall_boss': load_image('balcony10.png'),
-    'ground_boss': load_image('ground0.png')
+    'ground_boss': load_image('ground0.png'),
+    'princess': load_image('princess0.png'),
+    'prince': load_image('prince0.png')
 }
-player_image = load_image('crown02.png')
+# player_image = load_image('crown02.png')
 
 
 class Surface(pygame.sprite.Sprite):
@@ -81,16 +83,16 @@ class Balcony(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         # вычисляем маску для эффективного сравнения
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect.x = pos[0]
-        self.rect.y = pos[1]
+        self.rect = self.image.get_rect().move(
+            tile_width * pos[0], tile_height * pos[1])
 
 
 class Tile(pygame.sprite.Sprite):
-    def __init__(self, tile_type, pos_x, pos_y):
+    def __init__(self, tile_type, pos):
         super().__init__(all_sprites)
         self.image = tile_images[tile_type]
         self.rect = self.image.get_rect().move(
-            tile_width * pos_x, tile_height * pos_y)
+            tile_width * pos[0], tile_height * pos[1])
         self.abs_pos = (self.rect.x, self.rect.y)
 
 
@@ -136,25 +138,30 @@ class Frog(pygame.sprite.Sprite):
             camera.apply(sprite)
 
 
-'''
-class Enemy(pygame.sprite.Sprite):
-     # Класс врагов (принцев и принцесс)
-     # Надо разнести на два класса
-    image_f = load_image("princess0.png", color_key=-1)
-    image_m = load_image("prince0.png", color_key=-1)
+class Princess(pygame.sprite.Sprite):
+    image = load_image("princess0.png", color_key=-1)
 
     def __init__(self, pos):
         super().__init__(all_sprites)
-        self.image_f = Enemy.image_f
-        self.rect = self.image_f.get_rect()
-        self.image_m = Enemy.image_m
-        self.rect = self.image_m.get_rect()
+        self.image = Princess.image
+        self.rect = self.image.get_rect()
         # вычисляем маску для эффективного сравнения
-        self.mask_f = pygame.mask.from_surface(self.image_f)
-        self.mask_m = pygame.mask.from_surface(self.image_m)
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = pos[0]
         self.rect.y = pos[1]
-'''
+
+
+class Prince(pygame.sprite.Sprite):
+    image = load_image("princess0.png", color_key=-1)
+
+    def __init__(self, pos):
+        super().__init__(all_sprites)
+        self.image = Prince.image
+        self.rect = self.image.get_rect()
+        # вычисляем маску для эффективного сравнения
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect.x = pos[0]
+        self.rect.y = pos[1]
 
 
 def terminate():
@@ -218,49 +225,56 @@ def generate_level(level):
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == '.':
-                Tile('empty', x, y)
+                pass
             elif level[y][x] == '#':
-                Tile('wall', x, y)
+                Balcony((x, y))
             elif level[y][x] == '%':
-                Tile('wall_boss', x, y)
+                Tile('wall_boss', (x, y))
             elif level[y][x] == '*':
-                Tile('ground_boss', x, y)
+                Tile('ground_boss', (x, y))
+            elif level[y][x] == '!':
+                Tile('princess', (x, y))
+            # elif level[y][x] == '?':
+                # Tile('prince', (x, y))
             elif level[y][x] == '@':
-                Tile('empty', x, y)
-                new_player = Frog(x, y)
+                Tile('empty', (x, y))
+                new_player = Frog((x, y))
                 level[y][x] = "."
     return new_player, x, y
 
 
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                if pygame.key.get_mods() & pygame.KMOD_CTRL:
-                    Liana(event.pos)
-                else:
-                    Balcony(event.pos)
-            elif event.button == 3:
-                if personage is None:
-                    personage = Frog(event.pos)
-                else:
-                    personage.rect.topleft = event.pos
-        if event.type == pygame.KEYDOWN:
-            if personage:
-                if event.key == pygame.K_LEFT:
-                    personage.rect.x -= 20
-                elif event.key == pygame.K_RIGHT:
-                    personage.rect.x += 20
-                if pygame.sprite.spritecollideany(personage, all_lianas):
-                    if event.key == pygame.K_SPACE:
-                        personage.rect.y -= 25
+if __name__ == '__main__':
+    level_map = load_level(map_file)
+    personage, max_x, max_y = generate_level(level_map)
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if pygame.key.get_mods() & pygame.KMOD_CTRL:
+                        Liana(event.pos)
+                    else:
+                        Balcony(event.pos)
+                elif event.button == 3:
+                    if personage is None:
+                        personage = Frog(event.pos)
+                    else:
+                        personage.rect.topleft = event.pos
+            if event.type == pygame.KEYDOWN:
+                if personage:
+                    if event.key == pygame.K_LEFT:
+                        personage.rect.x -= 20
+                    elif event.key == pygame.K_RIGHT:
+                        personage.rect.x += 20
+                    if pygame.sprite.spritecollideany(personage, all_lianas):
+                        if event.key == pygame.K_SPACE:
+                            personage.rect.y -= 25
 
-    screen.blit(load_image('fon0.png'), (0, 0))
-    all_sprites.draw(screen)
-    all_sprites.update()
-    pygame.display.flip()
-    clock.tick(50)
-pygame.quit()
+        screen.blit(load_image('fon0.png'), (0, 0))
+        all_sprites.draw(screen)
+        all_sprites.update()
+        pygame.display.flip()
+        clock.tick(50)
+    pygame.quit()
