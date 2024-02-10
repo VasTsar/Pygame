@@ -133,12 +133,14 @@ class Frog(Sprite):
         self.rect = self.image.get_rect()
         # вычисляем маску для эффективного сравнения
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect.x = pos[0]
-        self.rect.y = pos[1]
+        self.rect.x = pos[0] * tile_width - self.image.get_width() // 2
+        self.rect.y = pos[1] * tile_height - self.image.get_height() // 2
+        self.pos = (self.rect.x, self.rect.y)
+
 
     def update(self):
         """ Если лягушка еще в небе """
-        if not pygame.sprite.spritecollideany(self, all_balconys):
+        if not pygame.sprite.spritecollideany(self, all_balconys) and not pygame.sprite.spritecollideany(self, all_lianas):
             self.rect = self.rect.move(0, 1)
 
     def move(self, x, y):
@@ -147,6 +149,21 @@ class Frog(Sprite):
         self.pos = (x, y)
         for sprite in all_sprites:
             camera.apply(sprite)
+
+    def move_in_direction(self, movement):
+        x, y = self.pos
+        if movement == "up":
+            if pygame.sprite.spritecollideany(personage, all_balconys):
+                personage.rect.y -= 50
+            elif pygame.sprite.spritecollideany(personage, all_lianas):
+                personage.rect.y -= 55
+        elif movement == "down":
+            if pygame.sprite.spritecollideany(personage, all_lianas):
+                personage.rect.y += 55
+        elif movement == "left":
+            personage.rect.x -= 20
+        elif movement == "right":
+            personage.rect.x += 20
 
 
 class Princess(pygame.sprite.Sprite):
@@ -268,15 +285,17 @@ if __name__ == '__main__':
             if event.type == pygame.KEYDOWN:
                 if personage:
                     if event.key == pygame.K_LEFT:
-                        personage.rect.x -= 20
+                        personage.move_in_direction('left')
                     elif event.key == pygame.K_RIGHT:
-                        personage.rect.x += 20
+                        personage.move_in_direction('right')
                     if pygame.sprite.spritecollideany(personage, all_balconys):
                         if event.key == pygame.K_SPACE:
-                            personage.rect.y -= 50
-                    if pygame.sprite.spritecollideany(personage, all_lianas):
+                            personage.move_in_direction('up')
+                    elif pygame.sprite.spritecollideany(personage, all_lianas):
                         if event.key == pygame.K_SPACE:
-                            personage.rect.y -= 55
+                            personage.move_in_direction('up')
+                        elif event.key == pygame.K_DOWN:
+                            personage.move_in_direction('down')
 
         screen.blit(load_image('fon0.png'), (0, 0))
         all_sprites.draw(screen)
