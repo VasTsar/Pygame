@@ -153,7 +153,7 @@ class Princess(pygame.sprite.Sprite):
 
 
 class Prince(pygame.sprite.Sprite):
-    image = load_image("princess0.png", color_key=-1)
+    image = load_image("prince0.png", color_key=-1)
 
     def __init__(self, pos):
         super().__init__(all_sprites)
@@ -237,8 +237,8 @@ def generate_level(level):
                 Tile('ground_boss', (x, y))
             elif level[y][x] == '!':
                 Tile('princess', (x, y))
-            # elif level[y][x] == '?':
-                # Tile('prince', (x, y))
+            elif level[y][x] == '?':
+                Tile('prince', (x, y))
             elif level[y][x] == '@':
                 Tile('empty', (x, y))
                 new_player = Frog((x, y))
@@ -249,22 +249,12 @@ def generate_level(level):
 if __name__ == '__main__':
     level_map = load_level(map_file)
     personage, max_x, max_y = generate_level(level_map)
+    camera.update(personage)
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    '''if pygame.key.get_mods() & pygame.KMOD_CTRL:
-                        Liana(event.pos)
-                    else:
-                        Balcony(event.pos)
-                elif event.button == 3:
-                    if personage is None:
-                        personage = Frog(event.pos)
-                    else:
-                        personage.rect.topleft = event.pos'''
             if event.type == pygame.KEYDOWN:
                 if personage:
                     if event.key == pygame.K_LEFT:
