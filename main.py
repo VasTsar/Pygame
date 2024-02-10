@@ -2,6 +2,7 @@ import os
 import pygame
 import sys
 import argparse
+#from frog import *
 
 
 parser = argparse.ArgumentParser()
@@ -69,8 +70,8 @@ class Liana(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         # вычисляем маску для эффективного сравнения
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect.x = pos[0]
-        self.rect.y = pos[1]
+        self.rect = self.image.get_rect().move(
+            tile_width * pos[0], tile_height * pos[1])
 
 
 class Balcony(pygame.sprite.Sprite):
@@ -228,6 +229,8 @@ def generate_level(level):
                 pass
             elif level[y][x] == '#':
                 Balcony((x, y))
+            elif level[y][x] == '(':
+                Liana((x, y))
             elif level[y][x] == '%':
                 Tile('wall_boss', (x, y))
             elif level[y][x] == '*':
@@ -253,7 +256,7 @@ if __name__ == '__main__':
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    if pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    '''if pygame.key.get_mods() & pygame.KMOD_CTRL:
                         Liana(event.pos)
                     else:
                         Balcony(event.pos)
@@ -261,13 +264,16 @@ if __name__ == '__main__':
                     if personage is None:
                         personage = Frog(event.pos)
                     else:
-                        personage.rect.topleft = event.pos
+                        personage.rect.topleft = event.pos'''
             if event.type == pygame.KEYDOWN:
                 if personage:
                     if event.key == pygame.K_LEFT:
                         personage.rect.x -= 20
                     elif event.key == pygame.K_RIGHT:
                         personage.rect.x += 20
+                    if pygame.sprite.spritecollideany(personage, all_balconys):
+                        if event.key == pygame.K_SPACE:
+                            personage.rect.y -= 50
                     if pygame.sprite.spritecollideany(personage, all_lianas):
                         if event.key == pygame.K_SPACE:
                             personage.rect.y -= 25
