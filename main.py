@@ -43,7 +43,7 @@ tile_images = {
     'princess': load_image('princess0.png'),
     'prince': load_image('prince0.png')
 }
-# player_image = load_image('crown02.png')
+# player_image = load_image('jaba.png')
 
 
 class Surface(pygame.sprite.Sprite):
@@ -88,7 +88,17 @@ class Balcony(pygame.sprite.Sprite):
             tile_width * pos[0], tile_height * pos[1])
 
 
-class Tile(pygame.sprite.Sprite):
+class Sprite(pygame.sprite.Sprite):
+
+    def __init__(self, group):
+        super().__init__(group)
+        self.rect = None
+
+    def get_event(self, event):
+        pass
+
+
+class Tile(Sprite):
     def __init__(self, tile_type, pos):
         super().__init__(all_sprites)
         self.image = tile_images[tile_type]
@@ -113,7 +123,7 @@ class Camera:
         self.dy = 0
 
 
-class Frog(pygame.sprite.Sprite):
+class Frog(Sprite):
     """ Класс лягушки (главного героя, за которого Вы играете)"""
     image = load_image("jaba.png", color_key=-1)
 
@@ -210,7 +220,7 @@ surface = Surface()
 clock = pygame.time.Clock()
 start_screen()
 camera = Camera()
-camera.update(personage)
+# camera.update(personage)
 
 
 def load_level(filename):
@@ -266,7 +276,7 @@ if __name__ == '__main__':
                             personage.rect.y -= 50
                     if pygame.sprite.spritecollideany(personage, all_lianas):
                         if event.key == pygame.K_SPACE:
-                            personage.rect.y -= 25
+                            personage.rect.y -= 55
 
         screen.blit(load_image('fon0.png'), (0, 0))
         all_sprites.draw(screen)
