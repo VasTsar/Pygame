@@ -3,7 +3,6 @@ import pygame
 import sys
 import argparse
 from sprite_class import Sprite
-# from frog import Frog
 
 
 parser = argparse.ArgumentParser()
@@ -44,6 +43,8 @@ tile_images = {
     'princess': load_image('princess0.png'),
     'prince': load_image('prince0.png')
 }
+
+
 # player_image = load_image('jaba.png')
 
 
@@ -61,8 +62,8 @@ class Surface(pygame.sprite.Sprite):
         self.rect.bottom = height
 
         self.abs_pos = (self.rect.x, self.rect.y)
-        
-        
+
+
 class Liana(pygame.sprite.Sprite):
     """ Класс лиан, по которым лягушка может залезать на балконы с врагами"""
     image = load_image("liana0.png", color_key=-1)
@@ -106,18 +107,22 @@ class Tile(Sprite):
 
 class Camera:
     """ Камера """
-    # починить
+
     def __init__(self):
         self.dx = 0
-        self.dy = 0
+        self.dy = 1
 
+    # Сдвинуть объект obj на смещение камеры
     def apply(self, obj):
-        obj.rect.x = obj.abs_pos[0] + self.dx
-        obj.rect.y = obj.abs_pos[1] + self.dy
+        obj.rect.x += self.dx // 2
+        obj.rect.y += self.dy // 2
+        return obj.rect.x, obj.rect.y
 
+    # Позиционировать камеру на объекте target
     def update(self, target):
-        self.dx = 0
-        self.dy = 0
+         self.dx = (personage.rect.x - self.dx - width / 2 - personage.abs_pos[0]) / 25
+
+        #self.dy = (personage.rect.y - self.dy - height / 2) / 15
 
 
 class Frog(Sprite):
@@ -240,7 +245,6 @@ surface = Surface()
 clock = pygame.time.Clock()
 start_screen()
 camera = Camera()
-# camera.update(personage)
 
 
 def load_level(filename):

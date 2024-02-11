@@ -8,7 +8,6 @@ class Sprite(pygame.sprite.Sprite):
         self.rect = None
         self.collision = [False] * 9
 
-
     def draw_collisions_points(self, screen):
         # pygame.draw.rect(screen, 'white', self.rect, 2)
         self.draw_point(screen, self.rect.topleft, self.collision[0])
@@ -25,9 +24,9 @@ class Sprite(pygame.sprite.Sprite):
 
     def draw_point(self, screen, pos, collision):
         if not collision:
-            pygame.draw.circle(screen, 'green', pos, 1)
+            pygame.draw.circle(screen, 'green', pos, 3)
         else:
-            pygame.draw.circle(screen, 'red', pos, 1)
+            pygame.draw.circle(screen, 'red', pos, 3)
 
     def check_collision(self, sprite_group, screen):
         self.draw_collisions_points(screen)
