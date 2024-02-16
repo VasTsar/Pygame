@@ -37,7 +37,7 @@ tile_width = tile_height = 50
 FPS = 50
 tile_images = {
     'wall': load_image('balcony0.png'),
-    'empty': load_image('crown01.png'),
+
     'wall_boss': load_image('balcony10.png'),
     'ground_boss': load_image('ground0.png'),
     'princess': load_image('princess0.png'),
@@ -275,7 +275,6 @@ def generate_level(level):
             elif level[y][x] == '?':
                 Tile('prince', (x, y))
             elif level[y][x] == '@':
-                Tile('empty', (x, y))
                 new_player = Frog((x, y))
                 level[y][x] = "."
     return new_player, x, y
