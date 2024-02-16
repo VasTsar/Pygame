@@ -147,6 +147,7 @@ class Frog(Sprite):
         if (not pygame.sprite.spritecollideany(self, all_balconys)
                 and not pygame.sprite.spritecollideany(self, all_lianas)):
             self.rect = self.rect.move(0, 1)
+
         self.collisions = self.check_collision(all_balconys, screen)
 
     def move(self, x, y):
@@ -240,7 +241,7 @@ all_balconys = pygame.sprite.Group()
 all_lianas = pygame.sprite.Group()
 personage = None
 
-surface = Surface()
+# surface = Surface()
 
 clock = pygame.time.Clock()
 start_screen()
