@@ -37,7 +37,7 @@ tile_width = tile_height = 50
 FPS = 50
 tile_images = {
     'wall': load_image('balcony0.png'),
-
+    'boss': load_image('boss0.png'),
     'wall_boss': load_image('balcony10.png'),
     'ground_boss': load_image('ground0.png'),
     'princess': load_image('princess0.png'),
@@ -266,6 +266,8 @@ def generate_level(level):
                 Balcony((x, y))
             elif level[y][x] == '(':
                 Liana((x, y))
+            elif level[y][x] == '|':
+                Tile('boss', (x, y))
             elif level[y][x] == '%':
                 Tile('wall_boss', (x, y))
             elif level[y][x] == '*':
