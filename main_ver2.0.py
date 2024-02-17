@@ -2,7 +2,6 @@ import os
 import pygame
 import sys
 import argparse
-import keyboard
 from sprite_class import Sprite
 
 
@@ -97,6 +96,22 @@ class Balcony(pygame.sprite.Sprite):
         self.abs_pos = (self.rect.x, self.rect.y)
 
 
+class BossBalcony(pygame.sprite.Sprite):
+    """ Класс балконов в зоне босса, по которым ходят враги (принцы и принцессы)"""
+    image = load_image("balcony10.png", color_key=-1)
+
+    def __init__(self, pos):
+        super().__init__(all_sprites, all_balconys)
+        self.image = BossBalcony.image
+        self.rect = self.image.get_rect()
+        # вычисляем маску для эффективного сравнения
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect().move(
+            tile_width * pos[0], tile_height * pos[1])
+
+        self.abs_pos = (self.rect.x, self.rect.y)
+
+
 class Tile(Sprite):
     def __init__(self, tile_type, pos):
         super().__init__(all_sprites)
@@ -121,11 +136,7 @@ class Camera:
 
     # Позиционировать камеру на объекте target
     def update(self, target):
-        if keyboard.is_pressed(pygame.K_RIGHT):
-            self.dx = (personage.rect.x - self.dx - width / 2 - personage.abs_pos[0]) / 25
-        #elif event.key == pygame.K_LEFT:
-            #self.dx = (personage.rect.x + self.dx - width / 2 - personage.abs_pos[0]) / 25
-
+        self.dx = (personage.rect.x - self.dx - width / 2 - personage.abs_pos[0]) / 22
 
         #self.dy = (personage.rect.y - self.dy - height / 2) / 15
 
@@ -275,7 +286,7 @@ def generate_level(level):
             elif level[y][x] == '|':
                 Tile('boss', (x, y))
             elif level[y][x] == '%':
-                Tile('wall_boss', (x, y))
+                BossBalcony((x, y))
             elif level[y][x] == '*':
                 Tile('ground_boss', (x, y))
             elif level[y][x] == '!':
