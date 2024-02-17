@@ -2,6 +2,7 @@ import os
 import pygame
 import sys
 import argparse
+import keyboard
 from sprite_class import Sprite
 
 
@@ -120,7 +121,11 @@ class Camera:
 
     # Позиционировать камеру на объекте target
     def update(self, target):
-         self.dx = (personage.rect.x - self.dx - width / 2 - personage.abs_pos[0]) / 25
+        if keyboard.is_pressed(pygame.K_RIGHT):
+            self.dx = (personage.rect.x - self.dx - width / 2 - personage.abs_pos[0]) / 25
+        #elif event.key == pygame.K_LEFT:
+            #self.dx = (personage.rect.x + self.dx - width / 2 - personage.abs_pos[0]) / 25
+
 
         #self.dy = (personage.rect.y - self.dy - height / 2) / 15
 
@@ -179,7 +184,7 @@ class Princess(pygame.sprite.Sprite):
     image = load_image("princess0.png", color_key=-1)
 
     def __init__(self, pos):
-        super().__init__(all_sprites)
+        super().__init__(all_sprites, all_enemys)
         self.image = Princess.image
         self.rect = self.image.get_rect()
         # вычисляем маску для эффективного сравнения
@@ -192,7 +197,7 @@ class Prince(pygame.sprite.Sprite):
     image = load_image("prince0.png", color_key=-1)
 
     def __init__(self, pos):
-        super().__init__(all_sprites)
+        super().__init__(all_sprites, all_enemys)
         self.image = Prince.image
         self.rect = self.image.get_rect()
         # вычисляем маску для эффективного сравнения
@@ -239,6 +244,7 @@ def start_screen():
 all_sprites = pygame.sprite.Group()
 all_balconys = pygame.sprite.Group()
 all_lianas = pygame.sprite.Group()
+all_enemys = pygame.sprite.Group()
 personage = None
 
 # surface = Surface()
