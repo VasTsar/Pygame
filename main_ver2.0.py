@@ -138,7 +138,7 @@ class Camera:
     def update(self, target):
         self.dx = (personage.rect.x - self.dx - width / 2 - personage.abs_pos[0]) / 22
 
-        #self.dy = (personage.rect.y - self.dy - height / 2) / 15
+        # self.dy = (personage.rect.y - self.dy - height / 2) / 15
 
 
 class Frog(Sprite):
