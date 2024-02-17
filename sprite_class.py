@@ -3,8 +3,8 @@ import pygame
 
 class Sprite(pygame.sprite.Sprite):
 
-    def __init__(self, group):
-        super().__init__(group)
+    def __init__(self, *group):
+        super().__init__(*group)
         self.rect = None
         self.collision = [False] * 9
 
@@ -56,7 +56,7 @@ class Sprite(pygame.sprite.Sprite):
                            # Лягушка не шла влево, так как ей мешал коллайд с землей по нижней точке
                            'left': [0, 4],
                            'right': [1, 5],
-                           'bottom': [2, 3, 7]}
+                           'down': [2, 3, 7]}
         collides_from_direction = [self.collision[x] for x in directions_dict[direction]]
         return any(collides_from_direction)
 

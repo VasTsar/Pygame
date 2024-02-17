@@ -3,12 +3,14 @@ import pygame
 import sys
 import argparse
 from sprite_class import Sprite
+from enemys import Prince, Princess
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("map", type=str, nargs="?", default="map.map")
 args = parser.parse_args()
 map_file = args.map
+G = 1
 
 
 def load_image(name, color_key=None):
@@ -48,7 +50,7 @@ tile_images = {
 # player_image = load_image('jaba.png')
 
 
-class Surface(pygame.sprite.Sprite):
+class Surface(Sprite):
     """ Класс поверхности (почвы внизу экрана, по которой передвигается лягушка)"""
     image = load_image("ground0.png", color_key=-1)
 
@@ -61,10 +63,10 @@ class Surface(pygame.sprite.Sprite):
         # располагаем платформу внизу
         self.rect.bottom = height
 
-        self.abs_pos = (self.rect.x, self.rect.y)
+        self.abs_pos = [self.rect.x, self.rect.y]
 
 
-class Liana(pygame.sprite.Sprite):
+class Liana(Sprite):
     """ Класс лиан, по которым лягушка может залезать на балконы с врагами"""
     image = load_image("liana0.png", color_key=-1)
 
@@ -77,10 +79,10 @@ class Liana(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(
             tile_width * pos[0], tile_height * pos[1])
 
-        self.abs_pos = (self.rect.x, self.rect.y)
+        self.abs_pos = [self.rect.x, self.rect.y]
 
 
-class Balcony(pygame.sprite.Sprite):
+class Balcony(Sprite):
     """ Класс балконов, по которым ходят враги (принцы и принцессы)"""
     image = load_image("balcony0.png", color_key=-1)
 
@@ -93,10 +95,10 @@ class Balcony(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(
             tile_width * pos[0], tile_height * pos[1])
 
-        self.abs_pos = (self.rect.x, self.rect.y)
+        self.abs_pos = [self.rect.x, self.rect.y]
 
 
-class BossBalcony(pygame.sprite.Sprite):
+class BossBalcony(Sprite):
     """ Класс балконов в зоне босса, по которым ходят враги (принцы и принцессы)"""
     image = load_image("balcony10.png", color_key=-1)
 
@@ -109,7 +111,7 @@ class BossBalcony(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(
             tile_width * pos[0], tile_height * pos[1])
 
-        self.abs_pos = (self.rect.x, self.rect.y)
+        self.abs_pos = [self.rect.x, self.rect.y]
 
 
 class Tile(Sprite):
@@ -126,17 +128,18 @@ class Camera:
 
     def __init__(self):
         self.dx = 0
-        self.dy = 1
+        self.dy = 0
 
     # Сдвинуть объект obj на смещение камеры
     def apply(self, obj):
-        obj.rect.x += self.dx // 2
-        obj.rect.y += self.dy // 2
+        obj.rect.x += self.dx
+        obj.rect.y += self.dy
         return obj.rect.x, obj.rect.y
 
     # Позиционировать камеру на объекте target
     def update(self, target):
-        self.dx = (personage.rect.x - self.dx - width / 2 - personage.abs_pos[0]) / 22
+        pass
+        # self.dx = (personage.rect.x - self.dx - width / 2 - personage.abs_pos[0]) / 22
 
         # self.dy = (personage.rect.y - self.dy - height / 2) / 15
 
@@ -145,9 +148,10 @@ class Frog(Sprite):
     """ Класс лягушки (главного героя, за которого Вы играете)"""
     image = load_image("jaba.png", color_key=-1)
 
-    def __init__(self, pos):
+    def __init__(self, pos, camera):
         super().__init__(all_sprites)
         self.image = Frog.image
+        self.camera = camera
         self.rect = self.image.get_rect()
         # вычисляем маску для эффективного сравнения
         self.mask = pygame.mask.from_surface(self.image)
@@ -155,14 +159,18 @@ class Frog(Sprite):
         self.rect.y = pos[1] * tile_height - self.image.get_height() // 2
         self.pos = (self.rect.x, self.rect.y)
         self.collisions = [False] * 8
+        self.velocity_y = 0
 
-        self.abs_pos = (self.rect.x, self.rect.y)
+        self.abs_pos = [self.rect.x, self.rect.y]
 
     def update(self):
         """ Если лягушка еще в небе """
         if (not pygame.sprite.spritecollideany(self, all_balconys)
                 and not pygame.sprite.spritecollideany(self, all_lianas)):
-            self.rect = self.rect.move(0, 1)
+            self.rect = self.rect.move(0, int(self.velocity_y))
+            self.velocity_y = min(10, self.velocity_y + G)
+        else:
+            self.velocity_y = 0
 
         self.collisions = self.check_collision(all_balconys, screen)
 
@@ -176,45 +184,32 @@ class Frog(Sprite):
     def move_in_direction(self, movement):
         x, y = self.pos
         if movement == "up" and not self.collide_from_direction('up'):
-            if pygame.sprite.spritecollideany(personage, all_balconys):
-                personage.rect.y -= 50
-            elif pygame.sprite.spritecollideany(personage, all_lianas):
-                personage.rect.y -= 55
-        elif movement == "down":
-            if pygame.sprite.spritecollideany(personage, all_lianas):
-                personage.rect.y += 55
+            if pygame.sprite.spritecollideany(self, all_balconys):
+                self.velocity_y = -15
+                self.rect.y -= 20
+                self.abs_pos[1] -= 50
+                self.camera.dx = 0
+            elif pygame.sprite.spritecollideany(self, all_lianas):
+                self.rect.y -= 10
+                self.abs_pos[1] -= 10
+                self.camera.dx = 0
+        elif movement == "down" and not self.collide_from_direction('down'):
+            if pygame.sprite.spritecollideany(self, all_lianas):
+                self.rect.y += 10
+                self.abs_pos[1] += 10
+                self.camera.dx = 0
         elif movement == "left" and not self.collide_from_direction('left'):
-            personage.rect.x -= 20
+            self.rect.x -= 10
+            self.abs_pos[0] -= 10
+            self.camera.dx = 10
         elif movement == "right" and not self.collide_from_direction('right'):
-            personage.rect.x += 20
+            self.rect.x += 10
+            self.abs_pos[0] += 10
+            self.camera.dx = -10
+        else:
+            self.camera.dx = 0
         for sprite in all_sprites:
-            camera.apply(sprite)
-
-
-class Princess(pygame.sprite.Sprite):
-    image = load_image("princess0.png", color_key=-1)
-
-    def __init__(self, pos):
-        super().__init__(all_sprites, all_enemys)
-        self.image = Princess.image
-        self.rect = self.image.get_rect()
-        # вычисляем маску для эффективного сравнения
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect.x = pos[0]
-        self.rect.y = pos[1]
-
-
-class Prince(pygame.sprite.Sprite):
-    image = load_image("prince0.png", color_key=-1)
-
-    def __init__(self, pos):
-        super().__init__(all_sprites, all_enemys)
-        self.image = Prince.image
-        self.rect = self.image.get_rect()
-        # вычисляем маску для эффективного сравнения
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect.x = pos[0]
-        self.rect.y = pos[1]
+            self.camera.apply(sprite)
 
 
 def terminate():
@@ -290,11 +285,11 @@ def generate_level(level):
             elif level[y][x] == '*':
                 Tile('ground_boss', (x, y))
             elif level[y][x] == '!':
-                Tile('princess', (x, y))
+                Princess((x, y), all_sprites, all_enemys)
             elif level[y][x] == '?':
-                Tile('prince', (x, y))
+                Prince((x, y), all_sprites, all_enemys)
             elif level[y][x] == '@':
-                new_player = Frog((x, y))
+                new_player = Frog((x, y), camera)
                 level[y][x] = "."
     return new_player, x, y
 
@@ -303,25 +298,42 @@ if __name__ == '__main__':
     level_map = load_level(map_file)
     personage, max_x, max_y = generate_level(level_map)
     camera.update(personage)
+    move_x_direction = None
+    move_y_direction = None
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                if personage:
-                    if event.key == pygame.K_LEFT:
-                        personage.move_in_direction('left')
-                    elif event.key == pygame.K_RIGHT:
-                        personage.move_in_direction('right')
-                    if pygame.sprite.spritecollideany(personage, all_balconys):
-                        if event.key == pygame.K_SPACE:
-                            personage.move_in_direction('up')
-                    elif pygame.sprite.spritecollideany(personage, all_lianas):
-                        if event.key == pygame.K_SPACE:
-                            personage.move_in_direction('up')
-                        elif event.key == pygame.K_DOWN:
-                            personage.move_in_direction('down')
+                if event.key == pygame.K_LEFT:
+                    move_x_direction = 'left'
+                    # personage.move_in_direction('left')
+                elif event.key == pygame.K_RIGHT:
+                    move_x_direction = 'right'
+                    # personage.move_in_direction('right')
+                if pygame.sprite.spritecollideany(personage, all_lianas):
+                    if event.key == pygame.K_SPACE:
+                        move_y_direction = 'up'
+                        # personage.move_in_direction('up')
+                    elif event.key == pygame.K_DOWN:
+                        move_y_direction = 'down'
+                        # personage.move_in_direction('down')
+                elif pygame.sprite.spritecollideany(personage, all_balconys):
+                    if event.key == pygame.K_SPACE:
+                        personage.move_in_direction('up')
+                else:
+                    move_y_direction = None
+
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    move_x_direction = None
+                elif event.key == pygame.K_SPACE or event.key == pygame.K_DOWN:
+                    move_y_direction = None
+        if move_x_direction:
+            personage.move_in_direction(move_x_direction)
+        if move_y_direction:
+            personage.move_in_direction(move_y_direction)
 
         screen.blit(load_image('fon0.png'), (0, 0))
         all_sprites.draw(screen)
