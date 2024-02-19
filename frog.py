@@ -1,4 +1,4 @@
-from sprite_class import Sprite
+'''from sprite_class import Sprite
 from main import load_image
 import pygame
 from main import all_sprites, all_balconys, all_lianas, tile_width, tile_height, personage, screen, camera
@@ -52,3 +52,4 @@ class Frog(Sprite):
             personage.rect.x += 20
         for sprite in all_sprites:
             camera.apply(sprite)
+'''

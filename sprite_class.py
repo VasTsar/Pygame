@@ -53,7 +53,6 @@ class Sprite(pygame.sprite.Sprite):
 
     def collide_from_direction(self, direction):
         directions_dict = {'up': [0, 1, 6],
-                           # Лягушка не шла влево, так как ей мешал коллайд с землей по нижней точке
                            'left': [0, 4],
                            'right': [1, 5],
                            'down': [2, 3, 7]}

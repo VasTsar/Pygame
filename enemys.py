@@ -21,3 +21,7 @@ class Princess(Enemy):
 
 class Prince(Enemy):
     image = load_image("prince0.png", color_key=-1)
+
+
+class Boss(Enemy):
+    image = load_image("boss0.png", color_key=-1)

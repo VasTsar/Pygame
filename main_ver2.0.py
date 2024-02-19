@@ -3,14 +3,14 @@ import pygame
 import sys
 import argparse
 from sprite_class import Sprite
-from enemys import Prince, Princess
+from enemys import Prince, Princess, Boss
+from const import G, FPS, size, width, height, tile_width, tile_height, score
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("map", type=str, nargs="?", default="map.map")
 args = parser.parse_args()
 map_file = args.map
-G = 1
 
 
 def load_image(name, color_key=None):
@@ -33,12 +33,11 @@ def load_image(name, color_key=None):
 
 pygame.init()
 
-size = width, height = 1541, 840
+# size = width, height = 1541, 840
 screen = pygame.display.set_mode(size)
-tile_width = tile_height = 50
-FPS = 50
+# tile_width = tile_height = 50
 tile_images = {
-    'wall': load_image('balcony0.png'),
+    'wall': load_image('balcony00.png'),
     'boss': load_image('boss0.png'),
     'wall_boss': load_image('balcony10.png'),
     'ground_boss': load_image('ground0.png'),
@@ -47,9 +46,7 @@ tile_images = {
 }
 
 
-# player_image = load_image('jaba.png')
-
-
+'''
 class Surface(Sprite):
     """ Класс поверхности (почвы внизу экрана, по которой передвигается лягушка)"""
     image = load_image("ground0.png", color_key=-1)
@@ -64,6 +61,7 @@ class Surface(Sprite):
         self.rect.bottom = height
 
         self.abs_pos = [self.rect.x, self.rect.y]
+        '''
 
 
 class Liana(Sprite):
@@ -84,7 +82,7 @@ class Liana(Sprite):
 
 class Balcony(Sprite):
     """ Класс балконов, по которым ходят враги (принцы и принцессы)"""
-    image = load_image("balcony0.png", color_key=-1)
+    image = load_image("balcony00.png", color_key=-1)
 
     def __init__(self, pos):
         super().__init__(all_sprites, all_balconys)
@@ -140,7 +138,6 @@ class Camera:
     def update(self, target):
         pass
         # self.dx = (personage.rect.x - self.dx - width / 2 - personage.abs_pos[0]) / 22
-
         # self.dy = (personage.rect.y - self.dy - height / 2) / 15
 
 
@@ -148,10 +145,11 @@ class Frog(Sprite):
     """ Класс лягушки (главного героя, за которого Вы играете)"""
     image = load_image("jaba.png", color_key=-1)
 
-    def __init__(self, pos, camera):
+    def __init__(self, pos, camera, score):
         super().__init__(all_sprites)
         self.image = Frog.image
         self.camera = camera
+        self.score = score
         self.rect = self.image.get_rect()
         # вычисляем маску для эффективного сравнения
         self.mask = pygame.mask.from_surface(self.image)
@@ -251,6 +249,7 @@ all_sprites = pygame.sprite.Group()
 all_balconys = pygame.sprite.Group()
 all_lianas = pygame.sprite.Group()
 all_enemys = pygame.sprite.Group()
+all_bosses = pygame.sprite.Group()
 personage = None
 
 # surface = Surface()
@@ -279,7 +278,7 @@ def generate_level(level):
             elif level[y][x] == '(':
                 Liana((x, y))
             elif level[y][x] == '|':
-                Tile('boss', (x, y))
+                Boss((x, y), all_sprites, all_bosses)
             elif level[y][x] == '%':
                 BossBalcony((x, y))
             elif level[y][x] == '*':
@@ -289,7 +288,7 @@ def generate_level(level):
             elif level[y][x] == '?':
                 Prince((x, y), all_sprites, all_enemys)
             elif level[y][x] == '@':
-                new_player = Frog((x, y), camera)
+                new_player = Frog((x, y), camera, score)
                 level[y][x] = "."
     return new_player, x, y
 
@@ -339,5 +338,5 @@ if __name__ == '__main__':
         all_sprites.draw(screen)
         all_sprites.update()
         pygame.display.flip()
-        clock.tick(50)
+        clock.tick(FPS)
     pygame.quit()
