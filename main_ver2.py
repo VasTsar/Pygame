@@ -1,19 +1,24 @@
-import os
 import pygame
+import os
 import sys
 import argparse
 from sprite_class import Sprite
 from enemys import Prince, Princess, Boss
 from const import G, FPS, size, width, height, tile_width, tile_height, score
+from utilities import load_image
 
 
+clock = pygame.time.Clock()
 parser = argparse.ArgumentParser()
 parser.add_argument("map", type=str, nargs="?", default="map.map")
 args = parser.parse_args()
 map_file = args.map
 
 
-def load_image(name, color_key=None):
+pygame.init()
+
+
+'''def load_image(name, color_key=None):
     """ Функция для загрузки спрайтов """
     fullname = os.path.join('data', name)
     try:
@@ -28,14 +33,10 @@ def load_image(name, color_key=None):
         image.set_colorkey(color_key)
     else:
         image = image.convert_alpha()
-    return image
+    return image'''
 
 
-pygame.init()
-
-# size = width, height = 1541, 840
 screen = pygame.display.set_mode(size)
-# tile_width = tile_height = 50
 tile_images = {
     'wall': load_image('balcony00.png'),
     'boss': load_image('boss0.png'),
@@ -61,7 +62,7 @@ class Surface(Sprite):
         self.rect.bottom = height
 
         self.abs_pos = [self.rect.x, self.rect.y]
-        '''
+'''
 
 
 class Liana(Sprite):
@@ -145,7 +146,7 @@ class Frog(Sprite):
     """ Класс лягушки (главного героя, за которого Вы играете)"""
     image = load_image("jaba.png", color_key=-1)
 
-    def __init__(self, pos, camera, score):
+    def __init__(self, pos, camera, score, all_heros):
         super().__init__(all_sprites)
         self.image = Frog.image
         self.camera = camera
@@ -169,6 +170,11 @@ class Frog(Sprite):
             self.velocity_y = min(10, self.velocity_y + G)
         else:
             self.velocity_y = 0
+
+        if pygame.sprite.spritecollideany(self, all_enemys) and self.collide_from_direction('down'):
+            for enemy in pygame.sprite.spritecollide(self, all_enemys, dokill=True, collided=None):
+                self.score += 5
+                print(self.score)
 
         self.collisions = self.check_collision(all_balconys, screen)
 
@@ -250,6 +256,7 @@ all_balconys = pygame.sprite.Group()
 all_lianas = pygame.sprite.Group()
 all_enemys = pygame.sprite.Group()
 all_bosses = pygame.sprite.Group()
+all_heros = pygame.sprite.Group()
 personage = None
 
 # surface = Surface()
@@ -288,7 +295,7 @@ def generate_level(level):
             elif level[y][x] == '?':
                 Prince((x, y), all_sprites, all_enemys)
             elif level[y][x] == '@':
-                new_player = Frog((x, y), camera, score)
+                new_player = Frog((x, y), camera, score, all_heros)
                 level[y][x] = "."
     return new_player, x, y
 
