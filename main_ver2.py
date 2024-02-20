@@ -1,14 +1,11 @@
 import pygame
-import os
-import sys
 import argparse
 from sprite_class import Sprite
 from enemys import Prince, Princess, Boss
 from const import G, FPS, size, width, height, tile_width, tile_height, score
-from utilities import load_image
+from utilities import load_image, terminate
 
 
-clock = pygame.time.Clock()
 parser = argparse.ArgumentParser()
 parser.add_argument("map", type=str, nargs="?", default="map.map")
 args = parser.parse_args()
@@ -16,24 +13,6 @@ map_file = args.map
 
 
 pygame.init()
-
-
-'''def load_image(name, color_key=None):
-    """ Функция для загрузки спрайтов """
-    fullname = os.path.join('data', name)
-    try:
-        image = pygame.image.load(fullname).convert()
-    except pygame.error as message:
-        print('Cannot load image:', name)
-        raise SystemExit(message)
-
-    if color_key is not None:
-        if color_key == -1:
-            color_key = image.get_at((0, 0))
-        image.set_colorkey(color_key)
-    else:
-        image = image.convert_alpha()
-    return image'''
 
 
 screen = pygame.display.set_mode(size)
@@ -45,24 +24,6 @@ tile_images = {
     'princess': load_image('princess0.png'),
     'prince': load_image('prince0.png')
 }
-
-
-'''
-class Surface(Sprite):
-    """ Класс поверхности (почвы внизу экрана, по которой передвигается лягушка)"""
-    image = load_image("ground0.png", color_key=-1)
-
-    def __init__(self):
-        super().__init__(all_sprites, all_balconys)
-        self.image = Surface.image
-        self.rect = self.image.get_rect()
-        # вычисляем маску для эффективного сравнения
-        self.mask = pygame.mask.from_surface(self.image)
-        # располагаем платформу внизу
-        self.rect.bottom = height
-
-        self.abs_pos = [self.rect.x, self.rect.y]
-'''
 
 
 class Liana(Sprite):
@@ -216,12 +177,6 @@ class Frog(Sprite):
             self.camera.apply(sprite)
 
 
-def terminate():
-    """ «Аварийное завершение» """
-    pygame.quit()
-    sys.exit()
-
-
 def start_screen():
     """ Функция для стартового экрана (появляется прu запуске, исчезает при нажатии на клавишу клавиатуры или мыши)"""
     intro_text = ["Стартовый экран", "",
@@ -258,8 +213,6 @@ all_enemys = pygame.sprite.Group()
 all_bosses = pygame.sprite.Group()
 all_heros = pygame.sprite.Group()
 personage = None
-
-# surface = Surface()
 
 clock = pygame.time.Clock()
 start_screen()

@@ -1,5 +1,6 @@
 import pygame
 import os
+import sys
 
 
 def load_image(name, color_key=None):
@@ -19,13 +20,14 @@ def load_image(name, color_key=None):
         image = image.convert_alpha()
     return image
 
-'''
+
 def terminate():
     """ «Аварийное завершение» """
     pygame.quit()
     sys.exit()
 
 
+'''
 def start_screen():
     """ Функция для стартового экрана (появляется прu запуске, исчезает при нажатии на клавишу клавиатуры или мыши)"""
     intro_text = ["Стартовый экран", "",
@@ -53,4 +55,21 @@ def start_screen():
                 return  # начинаем игру
         pygame.display.flip()
         clock.tick(FPS)
+
+
+
+class Surface(Sprite):
+    """ Пусть тут пока полежит """
+    image = load_image("ground0.png", color_key=-1)
+
+    def __init__(self):
+        super().__init__(all_sprites, all_balconys)
+        self.image = Surface.image
+        self.rect = self.image.get_rect()
+        # вычисляем маску для эффективного сравнения
+        self.mask = pygame.mask.from_surface(self.image)
+        # располагаем платформу внизу
+        self.rect.bottom = height
+
+        self.abs_pos = [self.rect.x, self.rect.y]
 '''
