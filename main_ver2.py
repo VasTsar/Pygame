@@ -107,7 +107,7 @@ class Frog(Sprite):
     """ Класс лягушки (главного героя, за которого Вы играете)"""
     image = load_image("jaba.png", color_key=-1)
 
-    def __init__(self, pos, camera, score, all_heros):
+    def __init__(self, pos, camera, score):
         super().__init__(all_sprites)
         self.image = Frog.image
         self.camera = camera
@@ -206,12 +206,32 @@ def start_screen():
         clock.tick(FPS)
 
 
+def finish_screen(win):
+    """ Функция для конечного экрана """
+    if win:
+        intro_text = ["You win!"]
+    else:
+        intro_text = ["You lose"]
+
+    fon = pygame.transform.scale(load_image('finish0.png'), (width, height))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 30)
+    text_coord = 50
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('white'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+
 all_sprites = pygame.sprite.Group()
 all_balconys = pygame.sprite.Group()
 all_lianas = pygame.sprite.Group()
 all_enemys = pygame.sprite.Group()
 all_bosses = pygame.sprite.Group()
-all_heros = pygame.sprite.Group()
 personage = None
 
 clock = pygame.time.Clock()
@@ -238,7 +258,7 @@ def generate_level(level):
             elif level[y][x] == '(':
                 Liana((x, y))
             elif level[y][x] == '|':
-                Boss((x, y), all_sprites, all_bosses)
+                Boss((x, y), all_sprites, all_enemys, all_bosses)
             elif level[y][x] == '%':
                 BossBalcony((x, y))
             elif level[y][x] == '*':
@@ -248,7 +268,7 @@ def generate_level(level):
             elif level[y][x] == '?':
                 Prince((x, y), all_sprites, all_enemys)
             elif level[y][x] == '@':
-                new_player = Frog((x, y), camera, score, all_heros)
+                new_player = Frog((x, y), camera, score)
                 level[y][x] = "."
     return new_player, x, y
 
