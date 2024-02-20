@@ -144,7 +144,6 @@ class Frog(Sprite):
             finish_screen(win=False)
         if self.score > 100:
             finish_screen(win=True)
-            terminate()
 
         self.collisions = self.check_collision(all_balconys, screen)
 
@@ -233,7 +232,17 @@ def finish_screen(win):
         intro_rect.top = text_coord
         intro_rect.x = 10
         text_coord += intro_rect.height
+
         screen.blit(string_rendered, intro_rect)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            '''elif event.type == pygame.KEYDOWN or \
+                    event.type == pygame.MOUSEBUTTONDOWN:
+                return  # начинаем игру'''
+        pygame.display.flip()
+        clock.tick(FPS)
 
 
 all_sprites = pygame.sprite.Group()
