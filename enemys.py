@@ -1,6 +1,7 @@
 import pygame
 from sprite_class import Sprite
-from main import load_image, tile_height, tile_width
+from utilities import load_image
+from const import tile_height, tile_width
 
 
 class Enemy(Sprite):

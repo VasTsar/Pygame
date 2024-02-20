@@ -1,4 +1,5 @@
 import pygame
+import sys
 import os
 
 
@@ -19,38 +20,36 @@ def load_image(name, color_key=None):
         image = image.convert_alpha()
     return image
 
-'''
+
 def terminate():
     """ «Аварийное завершение» """
     pygame.quit()
     sys.exit()
 
 
-def start_screen():
-    """ Функция для стартового экрана (появляется прu запуске, исчезает при нажатии на клавишу клавиатуры или мыши)"""
-    intro_text = ["Стартовый экран", "",
-                  "здесь будет текст"]
+tile_images = {
+    'wall': load_image('balcony00.png'),
+    'boss': load_image('boss0.png'),
+    'wall_boss': load_image('balcony10.png'),
+    'ground_boss': load_image('ground0.png'),
+    'princess': load_image('princess0.png'),
+    'prince': load_image('prince0.png')
+}
 
-    fon = pygame.transform.scale(load_image('start0.png'), (width, height))
-    screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 30)
-    text_coord = 50
-    for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('white'))
-        intro_rect = string_rendered.get_rect()
-        text_coord += 10
-        intro_rect.top = text_coord
-        intro_rect.x = 10
-        text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
 
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                terminate()
-            elif event.type == pygame.KEYDOWN or \
-                    event.type == pygame.MOUSEBUTTONDOWN:
-                return  # начинаем игру
-        pygame.display.flip()
-        clock.tick(FPS)
+'''
+class Surface(Sprite):
+    """ Пусть пока тут полежит"""
+    image = load_image("ground0.png", color_key=-1)
+
+    def __init__(self):
+        super().__init__(all_sprites, all_balconys)
+        self.image = Surface.image
+        self.rect = self.image.get_rect()
+        # вычисляем маску для эффективного сравнения
+        self.mask = pygame.mask.from_surface(self.image)
+        # располагаем платформу внизу
+        self.rect.bottom = height
+
+        self.abs_pos = [self.rect.x, self.rect.y]
 '''

@@ -1,14 +1,11 @@
 import pygame
-import os
-import sys
 import argparse
 from sprite_class import Sprite
 from enemys import Prince, Princess, Boss
 from const import G, FPS, size, width, height, tile_width, tile_height, score
-from utilities import load_image
+from utilities import load_image, terminate, tile_images
 
 
-clock = pygame.time.Clock()
 parser = argparse.ArgumentParser()
 parser.add_argument("map", type=str, nargs="?", default="map.map")
 args = parser.parse_args()
@@ -16,53 +13,7 @@ map_file = args.map
 
 
 pygame.init()
-
-
-'''def load_image(name, color_key=None):
-    """ Функция для загрузки спрайтов """
-    fullname = os.path.join('data', name)
-    try:
-        image = pygame.image.load(fullname).convert()
-    except pygame.error as message:
-        print('Cannot load image:', name)
-        raise SystemExit(message)
-
-    if color_key is not None:
-        if color_key == -1:
-            color_key = image.get_at((0, 0))
-        image.set_colorkey(color_key)
-    else:
-        image = image.convert_alpha()
-    return image'''
-
-
 screen = pygame.display.set_mode(size)
-tile_images = {
-    'wall': load_image('balcony00.png'),
-    'boss': load_image('boss0.png'),
-    'wall_boss': load_image('balcony10.png'),
-    'ground_boss': load_image('ground0.png'),
-    'princess': load_image('princess0.png'),
-    'prince': load_image('prince0.png')
-}
-
-
-'''
-class Surface(Sprite):
-    """ Класс поверхности (почвы внизу экрана, по которой передвигается лягушка)"""
-    image = load_image("ground0.png", color_key=-1)
-
-    def __init__(self):
-        super().__init__(all_sprites, all_balconys)
-        self.image = Surface.image
-        self.rect = self.image.get_rect()
-        # вычисляем маску для эффективного сравнения
-        self.mask = pygame.mask.from_surface(self.image)
-        # располагаем платформу внизу
-        self.rect.bottom = height
-
-        self.abs_pos = [self.rect.x, self.rect.y]
-'''
 
 
 class Liana(Sprite):
@@ -87,7 +38,7 @@ class Balcony(Sprite):
 
     def __init__(self, pos):
         super().__init__(all_sprites, all_balconys)
-        self.image = Balcony.image
+        self.image = self.__class__.image
         self.rect = self.image.get_rect()
         # вычисляем маску для эффективного сравнения
         self.mask = pygame.mask.from_surface(self.image)
@@ -97,20 +48,9 @@ class Balcony(Sprite):
         self.abs_pos = [self.rect.x, self.rect.y]
 
 
-class BossBalcony(Sprite):
+class BossBalcony(Balcony):
     """ Класс балконов в зоне босса, по которым ходят враги (принцы и принцессы)"""
     image = load_image("balcony10.png", color_key=-1)
-
-    def __init__(self, pos):
-        super().__init__(all_sprites, all_balconys)
-        self.image = BossBalcony.image
-        self.rect = self.image.get_rect()
-        # вычисляем маску для эффективного сравнения
-        self.mask = pygame.mask.from_surface(self.image)
-        self.rect = self.image.get_rect().move(
-            tile_width * pos[0], tile_height * pos[1])
-
-        self.abs_pos = [self.rect.x, self.rect.y]
 
 
 class Tile(Sprite):
@@ -146,7 +86,7 @@ class Frog(Sprite):
     """ Класс лягушки (главного героя, за которого Вы играете)"""
     image = load_image("jaba.png", color_key=-1)
 
-    def __init__(self, pos, camera, score, all_heros):
+    def __init__(self, pos, camera, score):
         super().__init__(all_sprites)
         self.image = Frog.image
         self.camera = camera
@@ -216,12 +156,6 @@ class Frog(Sprite):
             self.camera.apply(sprite)
 
 
-def terminate():
-    """ «Аварийное завершение» """
-    pygame.quit()
-    sys.exit()
-
-
 def start_screen():
     """ Функция для стартового экрана (появляется прu запуске, исчезает при нажатии на клавишу клавиатуры или мыши)"""
     intro_text = ["Стартовый экран", "",
@@ -232,7 +166,7 @@ def start_screen():
     font = pygame.font.Font(None, 30)
     text_coord = 50
     for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('white'))
+        string_rendered = font.render(line, 1, pygame.Color('blue'))
         intro_rect = string_rendered.get_rect()
         text_coord += 10
         intro_rect.top = text_coord
@@ -256,10 +190,7 @@ all_balconys = pygame.sprite.Group()
 all_lianas = pygame.sprite.Group()
 all_enemys = pygame.sprite.Group()
 all_bosses = pygame.sprite.Group()
-all_heros = pygame.sprite.Group()
 personage = None
-
-# surface = Surface()
 
 clock = pygame.time.Clock()
 start_screen()
@@ -295,7 +226,7 @@ def generate_level(level):
             elif level[y][x] == '?':
                 Prince((x, y), all_sprites, all_enemys)
             elif level[y][x] == '@':
-                new_player = Frog((x, y), camera, score, all_heros)
+                new_player = Frog((x, y), camera, score)
                 level[y][x] = "."
     return new_player, x, y
 
