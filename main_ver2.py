@@ -99,8 +99,6 @@ class Camera:
     # Позиционировать камеру на объекте target
     def update(self, target):
         pass
-        # self.dx = (personage.rect.x - self.dx - width / 2 - personage.abs_pos[0]) / 22
-        # self.dy = (personage.rect.y - self.dy - height / 2) / 15
 
 
 class Frog(Sprite):
@@ -148,6 +146,7 @@ class Frog(Sprite):
         self.collisions = self.check_collision(all_balconys, screen)
 
     def move(self, x, y):
+        ''' Движение камеры в зависимости от положения персонажа '''
         camera.dx -= tile_width * (x - self.pos[0])
         camera.dy -= tile_height * (y - self.pos[1])
         self.pos = (x, y)
@@ -155,6 +154,7 @@ class Frog(Sprite):
             camera.apply(sprite)
 
     def move_in_direction(self, movement):
+        ''' Движение в определенном направлении '''
         x, y = self.pos
         if movement == "up" and not self.collide_from_direction('up'):
             if pygame.sprite.spritecollideany(self, all_balconys):
@@ -238,9 +238,6 @@ def finish_screen(win):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            '''elif event.type == pygame.KEYDOWN or \
-                    event.type == pygame.MOUSEBUTTONDOWN:
-                return  # начинаем игру'''
         pygame.display.flip()
         clock.tick(FPS)
 
@@ -258,6 +255,7 @@ camera = Camera()
 
 
 def load_level(filename):
+    ''' Загрузка уровня (обработка файла с уровнем) '''
     filename = "data/" + filename
     with open(filename, 'r') as mapFile:
         level_map = [line.strip() for line in mapFile]
@@ -266,6 +264,7 @@ def load_level(filename):
 
 
 def generate_level(level):
+    ''' Отрисовка уровня и объектов, записанных определенными символами'''
     new_player, x, y = None, None, None
     for y in range(len(level)):
         for x in range(len(level[y])):
@@ -305,17 +304,13 @@ if __name__ == '__main__':
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     move_x_direction = 'left'
-                    # personage.move_in_direction('left')
                 elif event.key == pygame.K_RIGHT:
                     move_x_direction = 'right'
-                    # personage.move_in_direction('right')
                 if pygame.sprite.spritecollideany(personage, all_lianas):
                     if event.key == pygame.K_SPACE:
                         move_y_direction = 'up'
-                        # personage.move_in_direction('up')
                     elif event.key == pygame.K_DOWN:
                         move_y_direction = 'down'
-                        # personage.move_in_direction('down')
                 elif pygame.sprite.spritecollideany(personage, all_balconys):
                     if event.key == pygame.K_SPACE:
                         personage.move_in_direction('up')

@@ -16,12 +16,15 @@ class Enemy(Sprite):
 
 
 class Princess(Enemy):
+    ''' Класс врага (принцессы) '''
     image = load_image("princess0.png", color_key=-1)
 
 
 class Prince(Enemy):
+    ''' Класс врага (принца) '''
     image = load_image("prince0.png", color_key=-1)
 
 
 class Boss(Enemy):
+    ''' Класс врага (босса) '''
     image = load_image("boss0.png", color_key=-1)
