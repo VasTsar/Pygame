@@ -133,9 +133,18 @@ class Frog(Sprite):
             self.velocity_y = 0
 
         if pygame.sprite.spritecollideany(self, all_enemys) and self.collide_from_direction('down'):
-            for enemy in pygame.sprite.spritecollide(self, all_enemys, dokill=True, collided=None):
-                self.score += 5
-                print(self.score)
+            if pygame.sprite.spritecollideany(self, all_bosses):
+                for enemy in pygame.sprite.spritecollide(self, all_bosses, dokill=True, collided=None):
+                    self.score += 100
+            else:
+                for enemy in pygame.sprite.spritecollide(self, all_enemys, dokill=True, collided=None):
+                    self.score += 5
+        elif pygame.sprite.spritecollideany(self, all_enemys) and (self.collide_from_direction('left')
+                                                                   or self.collide_from_direction('right')):
+            finish_screen(win=False)
+        if self.score > 100:
+            finish_screen(win=True)
+            terminate()
 
         self.collisions = self.check_collision(all_balconys, screen)
 
