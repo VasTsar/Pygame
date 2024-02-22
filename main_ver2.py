@@ -11,7 +11,6 @@ parser.add_argument("map", type=str, nargs="?", default="map.map")
 args = parser.parse_args()
 map_file = args.map
 
-
 pygame.init()
 
 pygame.mixer.music.load('spring_fon.mp3')
