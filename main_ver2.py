@@ -14,6 +14,8 @@ map_file = args.map
 
 pygame.init()
 
+pygame.mixer.music.load('spring_fon.mp3')
+pygame.mixer.music.play(-1)
 
 screen = pygame.display.set_mode(size)
 tile_images = {
@@ -139,9 +141,9 @@ class Frog(Sprite):
                     self.score += 5
         elif pygame.sprite.spritecollideany(self, all_enemys) and (self.collide_from_direction('left')
                                                                    or self.collide_from_direction('right')):
-            finish_screen(win=False)
+            finish_screen(self.score, win=False)
         if self.score > 100:
-            finish_screen(win=True)
+            finish_screen(self.score, win=True)
 
         self.collisions = self.check_collision(all_balconys, screen)
 
@@ -214,10 +216,10 @@ def start_screen():
         clock.tick(FPS)
 
 
-def finish_screen(win):
+def finish_screen(score, win):
     """ Функция для конечного экрана """
     if win:
-        intro_text = ["You win!"]
+        intro_text = [f'Победа! Ваш рекорд {score}']
     else:
         intro_text = ["You lose"]
 
