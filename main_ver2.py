@@ -147,7 +147,7 @@ class Frog(Sprite):
         self.collisions = self.check_collision(all_balconys, screen)
 
     def move(self, x, y):
-        ''' Движение камеры в зависимости от положения персонажа '''
+        """ Движение камеры в зависимости от положения персонажа """
         camera.dx -= tile_width * (x - self.pos[0])
         camera.dy -= tile_height * (y - self.pos[1])
         self.pos = (x, y)
@@ -155,7 +155,7 @@ class Frog(Sprite):
             camera.apply(sprite)
 
     def move_in_direction(self, movement):
-        ''' Движение в определенном направлении '''
+        """ Движение в определенном направлении """
         x, y = self.pos
         if movement == "up" and not self.collide_from_direction('up'):
             if pygame.sprite.spritecollideany(self, all_balconys):
@@ -256,7 +256,7 @@ camera = Camera()
 
 
 def load_level(filename):
-    ''' Загрузка уровня (обработка файла с уровнем) '''
+    """ Загрузка уровня (обработка файла с уровнем) """
     filename = "data/" + filename
     with open(filename, 'r') as mapFile:
         level_map = [line.strip() for line in mapFile]
@@ -265,7 +265,7 @@ def load_level(filename):
 
 
 def generate_level(level):
-    ''' Отрисовка уровня и объектов, записанных определенными символами'''
+    """ Отрисовка уровня и объектов, записанных определенными символами """
     new_player, x, y = None, None, None
     for y in range(len(level)):
         for x in range(len(level[y])):
